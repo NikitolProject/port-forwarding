@@ -51,17 +51,8 @@ async fn handle_external_client(
     let internal_client = {
         let mut internal_clients = internal_clients.lock().await;
         loop {
-            if let Some(mut client) = internal_clients.pop_back() {
-                match client.write(&[0]).await {
-                    Ok(_) => {
-                        // Проверяем, что соединение активно
-                        break Some(client);
-                    }
-                    Err(e) => {
-                        // Соединение закрыто или недоступно
-                        info!("Skipping closed internal client connection: {}", e);
-                    }
-                }
+            if let Some(client) = internal_clients.pop_back() {
+                break Some(client);
             } else {
                 break None;
             }
